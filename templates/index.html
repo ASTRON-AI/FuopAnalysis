@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歷史資料區</title>
+    <style>
+        .positive { background-color: rgb(248, 212, 212); color: rgb(241, 16, 16); }
+        .negative { background-color: rgb(192, 243, 192); color: rgb(6, 161, 13); }
+        .red-text { color: red; }
+        .green-text { color: green; }
+        .yellow-background { background-color: rgb(214, 214, 99); color: rgb(29, 27, 27); }
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .chart {
+            width: 45%;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        .night-futures {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .tab {
+            display: none;
+        }
+        .tab.active {
+            display: block;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+        }
+        .tab-button.active {
+            background-color: #ccc;
+        }
+    </style>
+    <script>
+        function showTab(tabIndex) {
+            var tabs = document.querySelectorAll('.tab');
+            var tabButtons = document.querySelectorAll('.tab-button');
+            tabs.forEach(function(tab, index) {
+                tab.classList.toggle('active', index === tabIndex);
+                tabButtons[index].classList.toggle('active', index === tabIndex);
+            });
+        }
+
+        function getPercentile(data, percentile) {
+            data.sort((a, b) => a - b);
+            var index = Math.floor(percentile / 100 * data.length);
+            return data[index];
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var tableRows = document.querySelectorAll("table tbody tr");
+
+            var totalData = [];
+            tableRows.forEach(function(row) {
+                var total = parseFloat(row.querySelectorAll("td")[20].innerText);
+                totalData.push(total);
+            });
+
+        });
+    </script>
+</head>
+<body onload="showTab(0)">
+    <div class="tab active">
+        <h1>大盤檢查表 - {{ today_date }}</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>加權指數</th>
+                    <th>漲跌</th>
+                    <th>今日成交量</th>
+                    <th>比較</th>
+                    <th>五日成交量平均</th>
+                    <th>外資(億元)</th>
+                    <th>投信(億元)</th>
+                    <th>自營商(億元)</th>
+                    <th>融資(億元)</th>
+                    <th>融資增減(億元)</th>
+                    <th>融券(張)</th>
+                    <th>融券增減(張)</th>
+                    <th>外資期貨未平倉多方(口)</th>
+                    <th>外資期貨未平倉空方(口)</th>
+                    <th>外資期貨未平倉淨單(口)</th>
+                    <th>外資期貨未平倉增減(口)</th>
+                    <th>外資選擇權買權未平倉(億)</th>
+                    <th>外資選擇權賣權未平倉(億)</th>
+                    <th>自營商選擇權買權未平倉(億)</th>
+                    <th>自營商選擇權賣權未平倉(億)</th>
+                    <th>選擇權未平倉總和(億)</th>
+                    <th>選擇權未平倉總和增減(億)</th>
+                    <th>選擇權未平倉總和增減累計(億)</th>
+                    <th>多指標</th>
+                    <th>空指標</th>
+                </tr>
+            </thead>
+            {% for item in data %}
+            <tr>
+                <td>{{ item['日期'] }}</td>
+                <td>{{ "%.2f"|format(item['收盤指數']) }}</td>
+                <td class="{{ 'red-text' if item['漲跌'] < 0 else 'green-text' }}">{{ "%.2f"|format(item['漲跌']) }}</td>
+                <td>{{ "%.2f"|format(item['成交量(億元)']) }}</td>
+                <td class="{{ 'positive' if item['比較'] == '>' else 'negative' }}">{{ item['比較'] }}</td>
+                <td>{{ "%.2f"|format(item['五日成交量平均(億元)']) }}</td>
+                <td class="{{ 'positive' if item['外資(億元)'] > 100 else 'negative' if item['外資(億元)'] < -100 else 'red-text' if 0 > item['外資(億元)'] > -100 else 'green-text' }}">{{ "%.3f"|format(item['外資(億元)']) }}</td>
+                <td class="{{ 'red-text' if item['投信(億元)'] < 0 }}">{{ "%.3f"|format(item['投信(億元)']) }}</td>
+                <td class="{{ 'red-text' if item['自營(億元)'] < 0 }}">{{ "%.3f"|format(item['自營(億元)']) }}</td>
+                <td>{{ "%.3f"|format(item['融資(億元)']) }}</td>
+                <td>{{ "%.3f"|format(item['融資增減(億元)']) }}</td>
+                <td>{{ "%.d"|format(item['融券(張張)']) }}</td>
+                <td class="{{ 'red-text' if item['融券增減(張)'] < 0}}">{{ "%.d"|format(item['融券增減(張)']) }}</td>
+                <td>{{ "%.1f"|format(item['外資期貨未平倉多方(口)']) }}</td>
+                <td>{{ "%.1f"|format(item['外資期貨未平倉空方(口)']) }}</td>
+                <td class="{{ 'red-text' if item['外資期貨未平倉淨單(口)'] < 0 }}">{{ "%.1f"|format(item['外資期貨未平倉淨單(口)']) }}</td>
+                <td class="{{ 'positive' if item['外資期貨未平倉增減(口)'] > 3000 else 'negative' if item['外資期貨未平倉增減(口)'] < -3000 else 'red-text' if item['外資期貨未平倉增減(口)'] < 0 }}">{{ "%.1f"|format(item['外資期貨未平倉增減(口)']) }}</td>
+                <td class="{{ 'positive' if item['外資選擇權買權未平倉(億)'] > 1 else 'negative' if item['外資選擇權買權未平倉(億)'] < -1 else 'red-text' if item['外資選擇權買權未平倉(億)'] < 0 }}">{{ "%.3f"|format(item['外資選擇權買權未平倉(億)']) }}</td>
+                <td class="{{ 'negative' if item['外資選擇權賣權未平倉(億)'] > 1 else 'positive' if item['外資選擇權賣權未平倉(億)'] < -1 else 'red-text' if item['外資選擇權賣權未平倉(億)'] < 0 }}">{{ "%.3f"|format(item['外資選擇權賣權未平倉(億)']) }}</td>
+                <td class="{{ 'red-text' if item['自營商選擇權買權未平倉(億)'] < 0 }}">{{ "%.3f"|format(item['自營商選擇權買權未平倉(億)']) }}</td>
+                <td class="{{ 'red-text' if item['自營商選擇權賣權未平倉(億)'] < 0 }}">{{ "%.3f"|format(item['自營商選擇權賣權未平倉(億)']) }}</td>
+                <td class="{{ 'positive' if item['選擇權未平倉總和(億)'] >= top10Percent else 'negative' if item['選擇權未平倉總和(億)'] <= bottom10Percent else 'red-text' if item['選擇權未平倉總和(億)'] < 0 }}">{{ "%.3f"|format(item['選擇權未平倉總和(億)']) }}</td>
+                <td class="{{ 'positive' if item['選擇權未平倉總和增減(億)'] >= top10Percent_opsum else 'negative' if item['選擇權未平倉總和增減(億)'] <= bottom10Percent_opsum else 'red-text' if item['選擇權未平倉總和(億)'] < 0 }}">{{ "%.3f"|format(item['選擇權未平倉總和增減(億)']) }}</td>
+                <td class="{{ 'yellow-background' if -1 <= item['選擇權未平倉總和增減累計(億)'] <= 1 else 'red-text' }}">{{ "%.3f"|format(item['選擇權未平倉總和增減累計(億)']) }}</td>
+                <td class="{{ 'positive' if item['多'] > 2 }}">{{ "%d"|format(item['多']) }}</td>
+                <td class="{{ 'positive' if item['空'] > 2 }}">{{ "%d"|format(item['空']) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h2>台指夜盤期貨變動</h2>
+        <p class="night-futures {{ 'positive' if data[-1]['夜盤期貨變動'] > 0 else 'negative' }}">多空淨單: {{ "%.2f"|format(data[-1]['夜盤期貨變動']) }}</p>
+        <div class="chart-container">
+            <div class="chart">
+                <h2>外資買賣超</h2>
+                <img src="data:image/png;base64,{{ plot1 }}" alt="外資買賣超">
+            </div>
+            <div class="chart">
+                <h2>融資融券變化</h2>
+                <img src="data:image/png;base64,{{ plot2 }}" alt="融資融券變化">
+            </div>
+            <div class="chart">
+                <h2>外資期貨部位</h2>
+                <img src="data:image/png;base64,{{ plot3 }}" alt="外資期貨部位">
+            </div>
+            <div class="chart">
+                <h2>外資選擇權</h2>
+                <img src="data:image/png;base64,{{ plot4 }}" alt="外資選擇權">
+            </div>
+            <div>
+                <h2>播放音訊</h2>
+                <audio controls autoplay>
+                    <source src="{{ url_for('static', filename='speech.mp3') }}" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>    
+        <div class="chart-container">
+            <div class="chart">
+                {{ gauge_long | safe }}
+            </div>
+            <div class="chart">
+                {{ gauge_short | safe }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
