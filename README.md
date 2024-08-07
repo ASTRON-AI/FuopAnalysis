@@ -146,3 +146,59 @@ Before setting up the conda environment, ensure you have the following:
 3. **Install the Environment Packages**
    ```sh
    pip install requiresments.txt
+
+## Running `main.py`
+
+1. **Ensure the Conda Environment is Activated**
+
+    ```sh
+    conda activate myenv
+    ```
+
+2. **Navigate to the Project Directory**
+
+    ```sh
+    cd /path/to/your/project
+    ```
+
+3. **Run `main.py`**
+
+    ```sh
+    python main.py
+    ```
+
+   If `main.py` requires any command-line arguments, include them after `main.py`. For example:
+
+    ```sh
+    python main.py arg1 arg2
+    ```
+
+## Starting the Flask Web Application
+
+1. **Ensure the Conda Environment is Activated**
+
+    ```sh
+    conda activate myenv
+    ```
+
+2. **Navigate to the Project Directory**
+
+    ```sh
+    cd /path/to/your/project
+    ```
+
+3. **Run `app.py`**
+
+    ```sh
+    python app.py
+    ```
+
+4. **Access the Web Application**
+
+   Once the application is running, open your web browser and go to:
+
+    ```
+    http://localhost:5002
+    ```
+
+---
