@@ -202,3 +202,9 @@ Before setting up the conda environment, ensure you have the following:
     ```
 
 ---
+# write_todb.py
+
+This script is designed to extract data from an Excel file and store it in a MongoDB database. The script specifically reads data from a specified sheet in the Excel file, processes it, and then inserts it into a MongoDB collection.
+ ```sh
+    python write_todb.py
+ ```
